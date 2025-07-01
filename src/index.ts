@@ -1,5 +1,6 @@
 import { newReadline } from "./util/readline";
 import { REGEX, WEIGHTS } from "./util/constants"; 
+import { getCnpjInfo } from "./util/consultCnpj";
 
 const stripNonDigits = (value: string) => value.replace(REGEX.NON_DIGITS, "");
 const computeCheckDigit = (base: string, weights: number[]): number => {
@@ -18,11 +19,12 @@ function isValidCnpj(input: string | number | number[]): boolean {
   return digitSecondCheck === +numericDigits[13];
 };
 function main() {
-  const readline = newReadline();
-  readline.question("Digite o CNPJ: ").then((input) => {
+  const rl = newReadline();
+  rl.question("Digite o CNPJ: ").then(async (input: string) => {
     const isValid = isValidCnpj(input);
     console.log(`O CNPJ ${input} é ${isValid ? "válido" : "inválido"}.`);
-    readline.close();
-  });
-}
+    const answer: string = await rl.question("Gostaria de consultar este CNPJ? (y/n) ");
+    if (answer.trim().toLowerCase() === "y") {getCnpjInfo(stripNonDigits(input));}
+    rl.close();
+  });}
 main();
